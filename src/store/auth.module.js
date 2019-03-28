@@ -101,6 +101,7 @@ const mutations = {
     logoutSuccess(state) {
         state.accessToken = ''
     },
+
     refreshTokenPromise(state, promise) {
         state.refreshTokenPromise = promise
     }

@@ -1,3 +1,18 @@
+/*
+method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization':'Basic VVNFUl9DTElFTlRfQVBQOnBhc3N3b3Jk'
+        },
+        body:{
+            'grant_type':'password',
+            'username': username,
+            'password': password
+        },
+    };
+ */
+
+
 import ApiService from './api.service'
 import { TokenService } from './storage.service'
 
@@ -10,7 +25,6 @@ class AuthenticationError extends Error {
         this.errorCode = errorCode
     }
 }
-
 const UserService = {
     /**
      * Login the user and store the access token to TokenService.
@@ -19,17 +33,20 @@ const UserService = {
      * @throws AuthenticationError
      **/
     login: async function(email, password) {
+        let params=new URLSearchParams();
+        params.append('grant_type','password')
+        params.append('username',email)
+        params.append('password',password)
         const requestData = {
-            method: 'post',
-            url: "/oauth/token/",
-            data: {
-                grant_type: 'password',
-                username: email,
-                password: password
+            method: 'POST',
+            url: `${process.env.VUE_APP_OAUTH}`,
+            data:params,
+            header:{
+                'Content-Type':'application/x-www-form-urlencoded'
             },
             auth: {
-                username: process.env.VUE_APP_CLIENT_ID,
-                password: process.env.VUE_APP_CLIENT_SECRET
+                'username': process.env.VUE_APP_CLIENT_ID,
+                'password': process.env.VUE_APP_CLIENT_SECRET
             }
         }
 
@@ -58,7 +75,7 @@ const UserService = {
 
         const requestData = {
             method: 'post',
-            url: "/oauth/token/",
+            url: `${process.env.VUE_APP_OAUTH}`,
             data: {
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken

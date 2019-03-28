@@ -1,0 +1,43 @@
+query: {redirect: to.fullPath}  // Store the full path to redirect the user to after login
+
+const axios = require('axios');
+
+  export default {
+    data () {
+      return {
+        login:'',
+        password:''
+      }
+    },
+    methods:{
+      LogIn(){
+
+        let dat="username="+this.login+"&password="+this.password+"&grant_type=password";
+        console.log(dat);
+        axios({
+          method:'post',
+          url:'http://localhost:8080/oauth/token',
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization':'Basic VVNFUl9DTElFTlRfQVBQOnBhc3N3b3Jk'
+          },
+          data:dat
+          }).then(function (response) {
+          console.log(response)
+
+          barer=response.data.token_type
+          accessToken=response.data.access_token
+          refreshToken=response.data.refresh_token
+        }).catch(function (error) {
+          console.log(error) // someValue
+        });
+      }
+    }
+  }
+</script>
+
+data: {
+                grant_type: 'password',
+                username: email,
+                password: password
+            },

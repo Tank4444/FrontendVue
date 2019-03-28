@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { TokenService } from '../services/storage.service'
-import  store  from '../store'
+import store from '../store'
 
 const ApiService = {
+
+    _401interceptor: null,
 
     init(baseURL) {
         axios.defaults.baseURL = baseURL;
@@ -46,8 +48,6 @@ const ApiService = {
     customRequest(data) {
         return axios(data)
     },
-    // Stores the 401 interceptor position so that it can be later ejected when needed
-    _401interceptor: null,
     mount401Interceptor() {
         this._401interceptor = axios.interceptors.response.use(
             (response) => {
@@ -55,7 +55,7 @@ const ApiService = {
             },
             async (error) => {
                 if (error.request.status == 401) {
-                    if (error.config.url.includes('/o/token/')) {
+                    if (error.config.url.includes(`${process.env.VUE_APP_OAUTH}`)) {
                         // Refresh token has failed. Logout the user
                         store.dispatch('auth/logout')
                         throw error
