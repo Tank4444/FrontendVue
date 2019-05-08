@@ -72,6 +72,7 @@ const actions = {
                 },
                 error => {
                     commit('refreshTokenPromise', null)
+                    console.log(error);
                 }
             )
         }
@@ -89,7 +90,7 @@ const mutations = {
 
     loginSuccess(state, accessToken) {
         state.accessToken = accessToken
-        state.authenticating = false;
+        state.authenticating = true;
     },
 
     loginError(state, {errorCode, errorMessage}) {

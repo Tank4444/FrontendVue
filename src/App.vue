@@ -4,19 +4,7 @@
       <v-toolbar app dark class="primary">
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <v-toolbar-title v-text="'No Name'"></v-toolbar-title>
-        <v-autocomplete
-                v-model="select"
-                :loading="loading"
-                :items="items"
-                :search-input.sync="search"
-                cache-items
-                class="mx-3"
-                flat
-                hide-no-data
-                hide-details
-                label="What state are you from?"
-                solo-inverted
-        ></v-autocomplete>
+
       </v-toolbar>
       <v-navigation-drawer
               v-model="drawer"
@@ -41,23 +29,41 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-content overflow-hidden>
-        <router-view/>
+      <v-content>
+        <v-container fluid>
+          <router-view></router-view>
+        </v-container>
       </v-content>
-      <Footer/>
+        <v-footer height="auto" :fixed="true" >
+          <v-card
+                  class="flex myFooter"
+                  flat
+                  tile
+          >
+            <v-card-text class="primary player_panel text-xs-center">
+
+            </v-card-text>
+
+            <v-card-text class="primary justify-center text-xs-center">
+              <strong>
+                &copy;{{ new Date().getFullYear() }}
+              </strong>
+            </v-card-text>
+          </v-card>
+        </v-footer>
     </v-app>
   </div>
 </template>
 
 <script>
-import Footer from "./components/Footer";
-
 import {TokenService} from './services/storage.service'
+import {MusicService} from "./services/music.service";
+import { mapGetters,mapActions } from "vuex";
 
 export default {
   name: 'App',
   components: {
-    Footer
+
   },
   data: () =>({
     drawer: null,
@@ -71,6 +77,11 @@ export default {
         icon:'info',
         link: '/about'
     },
+      {
+        title:'upload',
+        icon:'touch_app',
+        link:'/upload'
+      },
     ],
     registrationMenu:[
       {
@@ -82,21 +93,35 @@ export default {
         title:'signup',
         icon:'touch_app',
         link:'/signup'
-      }
+      },
+
     ],
   }),
   method:{
-
-  },
-  computed:{
-    getMenu:function () {
-      let men=[]
-      men=men.concat(this.simpleMenu)
-      if(!TokenService.getToken()) {men=men.concat(this.registrationMenu)}
-
-
-      return men
+    getListofM(from, size) {
+      let resp = MusicService.getListOfMusic(from,size);
+      console.log(resp)
+      return resp
     }
+  },
+  computed: {
+    resp(){
+      return MusicService.getListOfMusic(0,10)
+    },
+    ...mapGetters(
+            'auth',
+            [
+                    'loggedIn'
+            ]
+    ),
+    getMenu: function () {
+      let men = []
+      men = men.concat(this.simpleMenu)
+      if (!TokenService.getToken()) {
+        men = men.concat(this.registrationMenu)
+      }
+      return men
+    },
   }
 
 
@@ -106,5 +131,15 @@ export default {
 
 </script>
 <style>
-
+  .player_panel{
+    height: 10vh;
+  }
+  .myFooter{
+    width: 100%;
+  }
+  .content{
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 75vh;
+  }
 </style>

@@ -16,6 +16,9 @@ ApiService.init(process.env.VUE_APP_ROOT_API)
 if (TokenService.getToken()) {
   ApiService.setHeader()
 }
+// NOTE: We haven't covered this yet in our ApiService
+//       but don't worry about this just yet - I'll come back to it later
+ApiService.mount401Interceptor();
 
 new Vue({
   router,

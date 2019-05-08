@@ -72,7 +72,6 @@ const UserService = {
      **/
     refreshToken: async function() {
         const refreshToken = TokenService.getRefreshToken()
-
         const requestData = {
             method: 'post',
             url: `${process.env.VUE_APP_OAUTH}`,
@@ -114,7 +113,12 @@ const UserService = {
 
         // NOTE: Again, we'll cover the 401 Interceptor a bit later.
         ApiService.unmount401Interceptor()
-    }
+    },
+
+    /*
+    get user data
+     */
+
 }
 
 export default UserService
