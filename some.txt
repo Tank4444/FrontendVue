@@ -56,3 +56,76 @@ data: {
         >
 
         </v-autocomplete>
+
+                    play(){
+                        let id=this.getPlayList[this.getNowPlayedId].id;
+                        let data = MusicService.getMusicData(id)
+                        data
+                            .then(
+                                result => {
+                                    //alert("Fulfilled: " + result); // result - аргумент resolve
+                                    var blob = new Blob([result.data], { type: 'audio/*' });
+                                    var objectUrl = window.URL.createObjectURL(blob);
+                                    let type =this.getPlayList[this.getNowPlayedId].mime.split('/')[1]
+                                    //this.howler.pause()
+                                    this.playl=[objectUrl]
+                                    /*
+                                    this.howler=new Howl({
+                                        src:[objectUrl],
+                                        format:[type],
+                                        html5:true,
+                                        preload:true,
+                                        volume:0.5,
+                                    })
+                                    */
+
+                                    this.howler.play()
+
+                                    /*
+                                     this.howler._src=[objectUrl]
+                                    let type =this.getPlayList[this.getNowPlayedId].mime.split('/')[1]
+                                    this.howler._format=[type]
+                                    //this.howler.load()
+                                    this.howler.play()
+                                    */
+
+                                },
+                                error => {
+                                    console.log(error)
+                                }
+                            );
+
+                        /*
+                        this.howler.unload(true)
+                        this.howler._src(objectUrl)
+                        this.howler.load()
+                        this.howler.play()
+                         */
+                    },
+        updateList:async function(){
+            try {
+                const responce = await MusicService.getListOfMusic(0, 10);
+                for(var i=0;i<responce.length;i++){
+                    const data = MusicService.getMusicData(responce[i].id)
+                    data.then(
+                        res=>{
+                            let reader= res.body.getReader();
+                            var blob = new Blob([reader.value]);
+                            var url = window.URL.createObjectURL(blob)
+                            responce[i].howl=new Howl({
+                                src:[url]
+                            })
+                        },
+                        error=>{
+                            console.log("Can't download")
+                        }
+                    )
+                }
+
+                this.setPlayList({data:responce})
+                return true
+            } catch (e) {
+                return false
+            }
+        },
+

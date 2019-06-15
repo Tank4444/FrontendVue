@@ -15,6 +15,7 @@
         <div class="large-12 medium-12 small-12 cell">
             <div v-for="(file, key) in files"
                  class="file-listing"
+                 v-bind:key="key"
             >
                 {{ file.name }}
                 <br>
@@ -93,7 +94,6 @@
                     }
                 }
                 this.uploading=false
-                if(this.files.length>0)this.submitFiles();
             },
             handleFilesUpload(){
                 let uploadedFiles = this.$refs.files.files;

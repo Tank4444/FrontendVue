@@ -1,72 +1,33 @@
-import {MusicService} from "../services/music.service";
-import ApiService from "../services/api.service";
-import {Howl,Howler} from "howler"
-import {TokenService} from "../services/storage.service";
-
 const state =  {
-    playlist:[],
+    musiclist:[],//for music
+    nowPlayedId:null,//id of player
 }
 
 const getters = {
-    getList: (state) => {
-        return state.playlist
+    getMusicList: (state) => {
+        return state.musiclist
+    },
+    getNowPlayedId: (state) => {
+        return state.nowPlayedId
     },
 }
 
 const actions = {
-    setList:async function({ commit }, {from, size}) {
-
-        try {
-            const responce = await MusicService.getListOfMusic(from, size);
-            for( var i = 0; i < responce.length; i++ ){
-                responce[i].display=true
-                /*
-                const requestData = {
-                    method: 'GET',
-                    url: `/api/music/stream`,
-                    params: {
-                        'id': responce[i].id,
-                    }
-                }
-                ApiService.setHeader()
-                try {
-                    const resp = await ApiService.customRequest(requestData)
-                    console.log(resp)
-                    let url = window.URL.createObjectURL(resp.data)
-                    responce[i].howl = new Howl({
-                        src: url
-                    })
-                } catch (error) {
-                    console.log(error)
-                }
-                 */
-                responce[i].howl=new Howl({
-                    src:[`https://springbootapptest22.herokuapp.com/api/music/stream?id=`+responce[i].id],
-                    headers: [
-                        {
-                            name: 'Authorization',
-                            value: 'Bearer ' + TokenService.getToken()
-                        }]
-                    ,
-                    html5:true,
-                    volume:1,
-                    buffer: true,
-                })
-            }
-
-            commit('list', responce)
-            return true
-        } catch (e) {
-            return false
-        }
+    setMusicList:async function(context , data) {
+        context.commit('musicList', data)
+    },
+    setNewPlayedId:async function(context , data) {
+        context.commit('nowPlayed', data)
     },
 }
 
 const mutations = {
-    list(state,data) {
-        state.playlist=data;
+    musicList(state,data) {
+        state.musiclist=data
     },
-
+    nowPlayed(state,data){
+        state.nowPlayedId=data
+    }
 }
 
 export const musiclist = {

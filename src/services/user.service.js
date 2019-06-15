@@ -72,19 +72,24 @@ const UserService = {
      **/
     refreshToken: async function() {
         const refreshToken = TokenService.getRefreshToken()
+        let params=new URLSearchParams();
+        params.append('grant_type','refresh_token')
+        params.append('refresh_token',refreshToken)
         const requestData = {
-            method: 'post',
+            method: 'POST',
             url: `${process.env.VUE_APP_OAUTH}`,
+            data: params,
+            /*
             data: {
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken
             },
+            */
             auth: {
                 username: process.env.VUE_APP_CLIENT_ID,
                 password: process.env.VUE_APP_CLIENT_SECRET
-            }
+            },
         }
-
         try {
             const response = await ApiService.customRequest(requestData)
 
@@ -118,7 +123,35 @@ const UserService = {
     /*
     get user data
      */
-
+    checkAuth:function(){
+        const requestData = {
+            method: 'POST',
+            url: `${process.env.VUE_APP_CHECK_TOKEN}`,
+            header:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization':TokenService.getToken()
+            },
+        }
+        console.log(requestData);
+        const res= ApiService.customRequest(requestData);
+        res.then(
+            result => {
+                console.log("Access Token OK")
+            },
+            error => {
+                const refr=this.refreshToken();
+                refr.then(
+                    result=>{
+                        console.log("RefreshToken OK")
+                    },
+                    error=>{
+                        console.log("RefreshToken Error")
+                        this.logout()
+                    }
+                )
+            }
+        );
+    }
 }
 
 export default UserService
